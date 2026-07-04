@@ -443,8 +443,8 @@ namespace Botcraft
 
         std::shared_ptr<ServerboundClientInformationConfigurationPacket> client_info_packet = std::make_shared<ServerboundClientInformationConfigurationPacket>();
         ClientInformation info;
-        info.SetLanguage("fr_FR");
-        info.SetViewDistance(10);
+        info.SetLanguage("en_US");
+        info.SetViewDistance(1);
         info.SetChatVisibility(static_cast<int>(ChatMode::Enabled));
         info.SetChatColors(true);
         info.SetModelCustomisation(0xFF);
@@ -706,8 +706,8 @@ namespace Botcraft
     void NetworkManager::Handle(ClientboundPlayerAbilitiesPacket& packet)
     {
         std::shared_ptr<ServerboundClientInformationPacket> settings_packet = std::make_shared<ServerboundClientInformationPacket>();
-        settings_packet->SetLanguage("fr_FR");
-        settings_packet->SetViewDistance(10);
+        settings_packet->SetLanguage("en_US");
+        settings_packet->SetViewDistance(1);
         settings_packet->SetChatVisibility(static_cast<int>(ChatMode::Enabled));
         settings_packet->SetChatColors(true);
         settings_packet->SetModelCustomisation(0xFF);
