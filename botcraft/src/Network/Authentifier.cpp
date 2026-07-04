@@ -21,9 +21,13 @@
 
 using namespace ProtocolCraft;
 
+#ifndef CACHED_CREDENTIALS_PATH
+#define CACHED_CREDENTIALS_PATH "botcraft_cached_credentials.json"
+#endif
+
 namespace Botcraft
 {
-    const std::string Authentifier::cached_credentials_path = "botcraft_cached_credentials.json";
+    const std::string Authentifier::cached_credentials_path = CACHED_CREDENTIALS_PATH;
     const std::string Authentifier::botcraft_app_id = "a0ad834d-e78a-4881-87f6-390aa0f4b283";
     const Json::Value Authentifier::defaultCachedCredentials = {
         { "msa", {

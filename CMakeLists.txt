@@ -33,6 +33,7 @@ option(BOTCRAFT_STATIC "If ON, will build botcraft as a static library instead o
 mark_as_advanced(BOTCRAFT_STATIC)
 
 set(BOTCRAFT_OUTPUT_DIR "${CMAKE_SOURCE_DIR}" CACHE PATH "Base output build path")
+set(BOTCRAFT_CACHED_CREDENTIALS_PATH "botcraft_cached_credentials.json" CACHE STRING "Path to the cached credentials file")
 
 # Version selection stuffs
 set(BOTCRAFT_GAME_VERSION "latest" CACHE STRING "Each version of the game uses a specific protocol. Make sure this matches the version of your server.")

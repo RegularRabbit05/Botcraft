@@ -635,7 +635,7 @@ target_include_directories(botcraft
         "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/private_include>"
 )
 
-target_compile_definitions(botcraft PRIVATE ASSETS_PATH="${ASSET_DIR}")
+target_compile_definitions(botcraft PRIVATE ASSETS_PATH="${ASSET_DIR}" CACHED_CREDENTIALS_PATH="${BOTCRAFT_CACHED_CREDENTIALS_PATH}")
 
 if (NOT BOTCRAFT_STATIC)
     # Add DL lib for linux compilation
