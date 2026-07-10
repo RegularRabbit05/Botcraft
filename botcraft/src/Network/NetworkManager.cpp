@@ -1,5 +1,6 @@
 #include <functional>
 #include <optional>
+#include <cstdlib>
 
 #include "botcraft/Game/Enums.hpp"
 #include "botcraft/Network/AESEncrypter.hpp"
@@ -23,6 +24,12 @@ using namespace ProtocolCraft;
 
 namespace Botcraft
 {
+    char* OptionallyGetHostNameEnvVariable()
+    {
+        return std::getenv( "HANDSHAKE_ADDRESS" );
+    }
+
+
     NetworkManager::NetworkManager(const std::string& address, const std::string& login_or_microsoft_cache_key_or_mc_token, const AuthType auth_type, const std::vector<Handler*>& handlers)
     {
         com = nullptr;
@@ -72,7 +79,11 @@ namespace Botcraft
 
         std::shared_ptr<ServerboundClientIntentionPacket> handshake_packet = std::make_shared<ServerboundClientIntentionPacket>();
         handshake_packet->SetProtocolVersion(PROTOCOL_VERSION);
-        handshake_packet->SetHostName(com->GetIp());
+        if (char* handshakeEnv = OptionallyGetHostNameEnvVariable(); handshakeEnv != NULL) {
+            handshake_packet->SetHostName(std::string(handshakeEnv));
+        } else {
+            handshake_packet->SetHostName(com->GetIp());
+        }
         handshake_packet->SetPort(com->GetPort());
         handshake_packet->SetIntention(static_cast<int>(ConnectionState::Login));
         Send(handshake_packet);
