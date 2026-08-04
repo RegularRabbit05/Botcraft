@@ -360,6 +360,8 @@ set(protocolCraft_PUBLIC_HDR
     include/protocolCraft/Types/Chat/ChatMessageContent.hpp
     include/protocolCraft/Types/Chat/ChatSender.hpp
     include/protocolCraft/Types/Chat/ChatTypeBoundNetwork.hpp
+    include/protocolCraft/Types/Chat/ChatTypeDecoration.hpp
+    include/protocolCraft/Types/Chat/DirectChatType.hpp
     include/protocolCraft/Types/Chat/FilterMask.hpp
     include/protocolCraft/Types/Chat/LastSeenMessagesEntry.hpp
     include/protocolCraft/Types/Chat/LastSeenMessagesUpdate.hpp
@@ -477,10 +479,12 @@ set(protocolCraft_PUBLIC_HDR
     include/protocolCraft/Types/Components/DataComponentTypeWrittenBookContent.hpp
 
     include/protocolCraft/Types/Components/Subtypes/AttributeModifier.hpp
+    include/protocolCraft/Types/Components/Subtypes/BannerPattern.hpp
     include/protocolCraft/Types/Components/Subtypes/BannerPatternLayer.hpp
     include/protocolCraft/Types/Components/Subtypes/BeehiveBlockEntityOccupant.hpp
     include/protocolCraft/Types/Components/Subtypes/BlockPredicate.hpp
     include/protocolCraft/Types/Components/Subtypes/DamageReduction.hpp
+    include/protocolCraft/Types/Components/Subtypes/DataComponentMatchers.hpp
     include/protocolCraft/Types/Components/Subtypes/Instrument.hpp
     include/protocolCraft/Types/Components/Subtypes/ItemDamageFunction.hpp
     include/protocolCraft/Types/Components/Subtypes/JukeboxSong.hpp
@@ -489,6 +493,7 @@ set(protocolCraft_PUBLIC_HDR
     include/protocolCraft/Types/Components/Subtypes/MobEffectInstance.hpp
     include/protocolCraft/Types/Components/Subtypes/MobEffectInstanceDetails.hpp
     include/protocolCraft/Types/Components/Subtypes/PaintingVariant.hpp
+    include/protocolCraft/Types/Components/Subtypes/PartialDataComponentPredicate.hpp
     include/protocolCraft/Types/Components/Subtypes/PartialResolvableProfile.hpp
     include/protocolCraft/Types/Components/Subtypes/PlayerSkinPatch.hpp
     include/protocolCraft/Types/Components/Subtypes/PossibleEffect.hpp

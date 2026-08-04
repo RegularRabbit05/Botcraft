@@ -92,11 +92,13 @@ namespace ProtocolCraft
         DEFINE_NETWORK_TYPE(ExactMatcher);
         DEFINE_NETWORK_TYPE(RangedMatcher);
         DEFINE_NETWORK_TYPE(AttributeModifier);
+        DEFINE_NETWORK_TYPE(BannerPattern);
         DEFINE_NETWORK_TYPE(BannerPatternLayer);
         DEFINE_NETWORK_TYPE(BeehiveBlockEntityOccupant);
         DEFINE_NETWORK_TYPE(BlockPredicate);
 #if PROTOCOL_VERSION > 769 /* > 1.21.4 */
         DEFINE_NETWORK_TYPE(DamageReduction);
+        DEFINE_NETWORK_TYPE(DataComponentMatchers);
 #endif
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
         DEFINE_NETWORK_TYPE(Instrument);
@@ -119,12 +121,15 @@ namespace ProtocolCraft
         DEFINE_NETWORK_TYPE(MobEffectInstanceDetails);
 #if PROTOCOL_VERSION > 769 /* > 1.21.4 */
         DEFINE_NETWORK_TYPE(PaintingVariant);
+        DEFINE_NETWORK_TYPE(PartialDataComponentPredicate);
 #endif
 #if PROTOCOL_VERSION > 772 /* > 1.21.8 */
         DEFINE_NETWORK_TYPE(PartialResolvableProfile);
         DEFINE_NETWORK_TYPE(PlayerSkinPatch);
 #endif
+#if PROTOCOL_VERSION < 768 /* < 1.21.2 */
         DEFINE_NETWORK_TYPE(PossibleEffect);
+#endif
         DEFINE_NETWORK_TYPE(StatePropertiesPredicate);
         DEFINE_NETWORK_TYPE(SuspiciousStewEntry);
         DEFINE_NETWORK_TYPE(ToolRule);
@@ -334,7 +339,7 @@ namespace ProtocolCraft
                 "block_state",
                 "bees",
 #if PROTOCOL_VERSION > 775 /* > 26.1.2 */
-                "sulfur_cube_content"
+                "sulfur_cube_content",
 #endif
                 "lock",
                 "container_loot",
@@ -430,9 +435,6 @@ namespace ProtocolCraft
             case DataComponentTypes::Recipes:
             case DataComponentTypes::Lock:
             case DataComponentTypes::ContainerLoot:
-#if PROTOCOL_VERSION > 767 /* > 1.21.1 */
-            case DataComponentTypes::Glider:
-#endif
                 // Component with no network serializer specified fallback to NBT
                 return std::make_shared<DataComponentTypeDefault>();
             case DataComponentTypes::BaseColor:
@@ -488,6 +490,7 @@ namespace ProtocolCraft
             case DataComponentTypes::Profile:
                 return std::make_shared<DataComponentTypeResolvableProfile>();
             case DataComponentTypes::NoteBlockSound:
+                return std::make_shared<DataComponentTypeIdentifier>();
 #if PROTOCOL_VERSION > 767 /* > 1.21.1 */
             case DataComponentTypes::DamageResistant:
                 return std::make_shared<DataComponentTypeDamageResistant>();
@@ -517,6 +520,9 @@ namespace ProtocolCraft
             case DataComponentTypes::CreativeSlotLock:
 #if PROTOCOL_VERSION < 768 /* < 1.21.2 */
             case DataComponentTypes::FireResistant:
+#endif
+#if PROTOCOL_VERSION > 767 /* > 1.21.1 */
+            case DataComponentTypes::Glider:
 #endif
                 return std::make_shared<DataComponentTypeUnit>();
             case DataComponentTypes::WritableBookContent:
@@ -561,6 +567,7 @@ namespace ProtocolCraft
             case DataComponentTypes::Axolotl_Variant:
             case DataComponentTypes::Cat_Variant:
             case DataComponentTypes::Cow_Variant:
+            case DataComponentTypes::Fox_Variant:
             case DataComponentTypes::Frog_Variant:
             case DataComponentTypes::Horse_Variant:
             case DataComponentTypes::Llama_Variant:
@@ -692,6 +699,14 @@ namespace ProtocolCraft
 
             return output;
         }
+
+
+#if PROTOCOL_VERSION > 769 /* > 1.21.4 */
+        DataComponentPatch::DataComponentPatch(const LengthPrefixedDataComponentPatch& p)
+        {
+            map = p.GetMap();
+        }
+#endif
 
 
         DataComponentPatch::~DataComponentPatch()
@@ -826,6 +841,100 @@ namespace ProtocolCraft
 
         DEFINE_NETWORK_TYPE(HashedDataComponentPatch);
 #endif
-    }
+        LengthPrefixedDataComponentPatch::LengthPrefixedDataComponentPatch(const DataComponentPatch& p)
+        {
+            map = p.GetMap();
+        }
+
+        const std::map<DataComponentTypes, std::shared_ptr<DataComponentType>>& LengthPrefixedDataComponentPatch::GetMap() const
+        {
+            return map;
+        }
+
+        LengthPrefixedDataComponentPatch& LengthPrefixedDataComponentPatch::SetMap(const std::map<DataComponentTypes, std::shared_ptr<DataComponentType>>& map_)
+        {
+            map = map_;
+            return *this;
+        }
+
+        void LengthPrefixedDataComponentPatch::ReadImpl(ReadIterator& iter, size_t& length)
+        {
+            const int num_data = ReadData<VarInt>(iter, length);
+            const int num_void = ReadData<VarInt>(iter, length);
+
+            map.clear();
+
+            for (int i = 0; i < num_data; ++i)
+            {
+                const DataComponentTypes type = ReadData<DataComponentTypes, VarInt>(iter, length);
+                const int data_size = ReadData<VarInt>(iter, length);
+                std::shared_ptr<DataComponentType> data = CreateComponentType(type);
+
+                if (data != nullptr)
+                {
+                    data->Read(iter, length);
+                }
+                map.insert({ type, data });
+            }
+
+            for (int i = 0; i < num_void; ++i)
+            {
+                const DataComponentTypes type = ReadData<DataComponentTypes, VarInt>(iter, length);
+                map.insert({ type, nullptr });
+            }
+        }
+
+        void LengthPrefixedDataComponentPatch::WriteImpl(WriteContainer& container) const
+        {
+            int num_data = 0;
+            for (const auto& p : map)
+            {
+                num_data += p.second != nullptr;
+            }
+            const int num_void = static_cast<int>(map.size()) - num_data;
+
+            WriteData<VarInt>(num_data, container);
+            WriteData<VarInt>(num_void, container);
+
+            for (const auto& p : map)
+            {
+                if (p.second == nullptr)
+                {
+                    continue;
+                }
+                WriteData<DataComponentTypes, VarInt>(p.first, container);
+                WriteContainer temp;
+                // Serialize to an intermediate vector to get the size
+                p.second->Write(temp);
+                WriteData<VarInt>(static_cast<int>(temp.size()), container);
+                WriteByteArray(temp, container);
+            }
+
+            for (const auto& p : map)
+            {
+                if (p.second != nullptr)
+                {
+                    continue;
+                }
+                WriteData<DataComponentTypes, VarInt>(p.first, container);
+            }
+        }
+
+        Json::Value LengthPrefixedDataComponentPatch::SerializeImpl() const
+        {
+            Json::Value output;
+
+            output["map"] = Json::Array();
+            for (const auto& p : map)
+            {
+                output["map"].push_back({
+                    { "name", DataComponentTypesToString(p.first) },
+                    { "data", p.second == nullptr ? nullptr : p.second->Serialize() }
+                });
+            }
+
+            return output;
+        }
+}
 }
 #endif

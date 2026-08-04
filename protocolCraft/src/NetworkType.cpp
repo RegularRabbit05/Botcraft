@@ -80,6 +80,12 @@
 #endif
 #if PROTOCOL_VERSION > 759 /* > 1.19 */
 #include "protocolCraft/Types/Chat/ChatTypeBoundNetwork.hpp"
+#endif
+#if PROTOCOL_VERSION > 766 /* > 1.20.5 */
+#include "protocolCraft/Types/Chat/ChatTypeDecoration.hpp"
+#include "protocolCraft/Types/Chat/DirectChatType.hpp"
+#endif
+#if PROTOCOL_VERSION > 759 /* > 1.19 */
 #include "protocolCraft/Types/Chat/FilterMask.hpp"
 #include "protocolCraft/Types/Chat/LastSeenMessagesEntry.hpp"
 #include "protocolCraft/Types/Chat/LastSeenMessagesUpdate.hpp"
@@ -225,6 +231,12 @@ namespace ProtocolCraft
 #endif
 #if PROTOCOL_VERSION > 759 /* > 1.19 */
     DEFINE_NETWORK_TYPE(ChatTypeBoundNetwork);
+#endif
+#if PROTOCOL_VERSION > 766 /* > 1.20.5 */
+    DEFINE_NETWORK_TYPE(ChatTypeDecoration);
+    DEFINE_NETWORK_TYPE(DirectChatType);
+#endif
+#if PROTOCOL_VERSION > 759 /* > 1.19 */
     DEFINE_NETWORK_TYPE(FilterMask);
     DEFINE_NETWORK_TYPE(LastSeenMessagesEntry);
     DEFINE_NETWORK_TYPE(LastSeenMessagesUpdate);
@@ -262,6 +274,9 @@ namespace ProtocolCraft
     DEFINE_NETWORK_TYPE(ItemStackTemplate);
 #endif
     DEFINE_NETWORK_TYPE(Slot);
+#if PROTOCOL_VERSION > 769 /* > 1.21.4 */
+    DEFINE_NETWORK_TYPE(UntrustedItemStack);
+#endif
 #if PROTOCOL_VERSION > 451 /* > 1.13.2 */
     DEFINE_NETWORK_TYPE(MerchantOffer);
 #endif
