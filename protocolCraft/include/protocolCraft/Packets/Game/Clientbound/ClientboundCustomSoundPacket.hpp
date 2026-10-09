@@ -1,4 +1,4 @@
-#if PROTOCOL_VERSION < 761 /* < 1.19.3 */
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */ && PROTOCOL_VERSION < 761 /* < 1.19.3 */
 #pragma once
 
 #include "protocolCraft/BasePacket.hpp"
@@ -16,7 +16,11 @@ namespace ProtocolCraft
         SERIALIZED_FIELD(Y, int);
         SERIALIZED_FIELD(Z, int);
         SERIALIZED_FIELD(Volume, float);
+#if PROTOCOL_VERSION < 210 /* < 1.10 */
+        SERIALIZED_FIELD(Pitch, unsigned char);
+#else
         SERIALIZED_FIELD(Pitch, float);
+#endif
 #if PROTOCOL_VERSION > 758 /* > 1.18.2 */
         SERIALIZED_FIELD(Seed, long long int);
 #endif

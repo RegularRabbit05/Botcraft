@@ -20,6 +20,11 @@
 #include "protocolCraft/Packets/Configuration/Clientbound/ClientboundFinishConfigurationPacket.hpp"
 #include "protocolCraft/Packets/Configuration/Clientbound/ClientboundKeepAlivePacket.hpp"
 #include "protocolCraft/Packets/Configuration/Clientbound/ClientboundPingPacket.hpp"
+#endif
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+#include "protocolCraft/Packets/Configuration/Clientbound/ClientboundPostEffectsPacket.hpp"
+#endif
+#if PROTOCOL_VERSION > 763 /* > 1.20.1 */
 #include "protocolCraft/Packets/Configuration/Clientbound/ClientboundRegistryDataPacket.hpp"
 #endif
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
@@ -85,6 +90,9 @@
 #if PROTOCOL_VERSION < 764 /* < 1.20.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundAddPlayerPacket.hpp"
 #endif
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+#include "protocolCraft/Packets/Game/Clientbound/ClientboundAddTransientBlockPacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 754 /* > 1.16.5 */ && PROTOCOL_VERSION < 759 /* < 1.19 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundAddVibrationSignalPacket.hpp"
 #endif
@@ -100,7 +108,9 @@
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundBlockEntityDataPacket.hpp"
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundBlockEventPacket.hpp"
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundBlockUpdatePacket.hpp"
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundBossEventPacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 761 /* > 1.19.3 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundBundlePacket.hpp"
 #endif
@@ -138,7 +148,9 @@
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundCookieRequestPacket.hpp"
 #endif
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundCooldownPacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 759 /* > 1.19 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundCustomChatCompletionsPacket.hpp"
 #endif
@@ -146,7 +158,7 @@
 #if PROTOCOL_VERSION > 766 /* > 1.20.6 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundCustomReportDetailsPacket.hpp"
 #endif
-#if PROTOCOL_VERSION < 761 /* < 1.19.3 */
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */ && PROTOCOL_VERSION < 761 /* < 1.19.3 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundCustomSoundPacket.hpp"
 #endif
 #if PROTOCOL_VERSION > 761 /* > 1.19.3 */
@@ -173,7 +185,9 @@
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundEntityPositionSyncPacket.hpp"
 #endif
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundExplodePacket.hpp"
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundForgetLevelChunkPacket.hpp"
+#endif
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundGameEventPacket.hpp"
 #if PROTOCOL_VERSION > 774 /* > 1.21.11 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundGameRuleValuesPacket.hpp"
@@ -206,6 +220,9 @@
 #if PROTOCOL_VERSION > 774 /* > 1.21.11 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundLowDiskSpaceWarningPacket.hpp"
 #endif
+#if PROTOCOL_VERSION < 107 /* < 1.9 */
+#include "protocolCraft/Packets/Game/Clientbound/ClientboundMapChunkBulkPacket.hpp"
+#endif
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMapItemDataPacket.hpp"
 #if PROTOCOL_VERSION > 404 /* > 1.13.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMerchantOffersPacket.hpp"
@@ -216,13 +233,18 @@
 #if PROTOCOL_VERSION < 755 /* < 1.17 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMoveEntityPacket.hpp"
 #endif
+#if PROTOCOL_VERSION < 107 /* < 1.9 */
+#include "protocolCraft/Packets/Game/Clientbound/ClientboundSetEntityNBTPacket.hpp"
+#endif
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMoveEntityPacketPos.hpp"
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMoveEntityPacketPosRot.hpp"
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMoveEntityPacketRot.hpp"
 #if PROTOCOL_VERSION > 767 /* > 1.21.1 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMoveMinecartPacket.hpp"
 #endif
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundMoveVehiclePacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 404 /* > 1.13.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundOpenBookPacket.hpp"
 #endif
@@ -231,7 +253,12 @@
 #if PROTOCOL_VERSION > 754 /* > 1.16.5 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundPingPacket.hpp"
 #endif
+#if PROTOCOL_VERSION > 335 /* > 1.12 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundPlaceGhostRecipePacket.hpp"
+#endif
+#if PROTOCOL_VERSION < 107 /* < 1.9 */
+#include "protocolCraft/Packets/Game/Clientbound/ClientboundPlayCompressionPacket.hpp"
+#endif
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundPlayerAbilitiesPacket.hpp"
 #if PROTOCOL_VERSION > 759 /* > 1.19 */ && PROTOCOL_VERSION < 761 /* < 1.19.3 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundPlayerChatHeaderPacket.hpp"
@@ -264,6 +291,9 @@
 #if PROTOCOL_VERSION > 763 /* > 1.20.1 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundPongResponsePacket.hpp"
 #endif
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+#include "protocolCraft/Packets/Game/Clientbound/ClientboundPostEffectsPacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundProjectilePowerPacket.hpp"
 #endif
@@ -272,7 +302,7 @@
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundRecipeBookRemovePacket.hpp"
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundRecipeBookSettingsPacket.hpp"
 #endif
-#if PROTOCOL_VERSION < 768 /* < 1.21.2 */
+#if PROTOCOL_VERSION > 316 /* > 1.11.2 */ && PROTOCOL_VERSION < 768 /* < 1.21.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundRecipePacket.hpp"
 #endif
 #if PROTOCOL_VERSION < 755 /* < 1.17 */ || PROTOCOL_VERSION > 755 /* > 1.17 */
@@ -295,7 +325,9 @@
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundRespawnPacket.hpp"
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundRotateHeadPacket.hpp"
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundSectionBlocksUpdatePacket.hpp"
+#if PROTOCOL_VERSION > 316 /* > 1.11.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundSelectAdvancementsTabPacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 758 /* > 1.18.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundServerDataPacket.hpp"
 #endif
@@ -341,7 +373,9 @@
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundSetHeldSlotPacket.hpp"
 #endif
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundSetObjectivePacket.hpp"
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundSetPassengersPacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 767 /* > 1.21.1 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundSetPlayerInventoryPacket.hpp"
 #endif
@@ -377,6 +411,9 @@
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundStoreCookiePacket.hpp"
 #endif
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+#include "protocolCraft/Packets/Game/Clientbound/ClientboundSwingAnimationPacket.hpp"
+#endif
 #if PROTOCOL_VERSION > 758 /* > 1.18.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundSystemChatPacket.hpp"
 #endif
@@ -399,7 +436,9 @@
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundTransferPacket.hpp"
 #endif
+#if PROTOCOL_VERSION > 316 /* > 1.11.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundUpdateAdvancementsPacket.hpp"
+#endif
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundUpdateAttributesPacket.hpp"
 #if PROTOCOL_VERSION > 760 /* > 1.19.2 */ && PROTOCOL_VERSION < 764 /* < 1.20.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundUpdateEnabledFeaturesPacket.hpp"
@@ -407,6 +446,11 @@
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundUpdateMobEffectPacket.hpp"
 #if PROTOCOL_VERSION > 340 /* > 1.12.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundUpdateRecipesPacket.hpp"
+#endif
+#if PROTOCOL_VERSION < 110 /* < 1.9.3 */
+#include "protocolCraft/Packets/Game/Clientbound/ClientboundUpdateSignPacket.hpp"
+#endif
+#if PROTOCOL_VERSION > 340 /* > 1.12.2 */
 #include "protocolCraft/Packets/Game/Clientbound/ClientboundUpdateTagsPacket.hpp"
 #endif
 #if PROTOCOL_VERSION < 477 /* < 1.14 */
@@ -437,6 +481,9 @@ namespace ProtocolCraft
 #if PROTOCOL_VERSION > 764 /* > 1.20.2 */
         ClientboundResourcePackPopConfigurationPacket,
         ClientboundResourcePackPushConfigurationPacket,
+#endif
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+        ClientboundPostEffectsConfigurationPacket,
 #endif
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
         ClientboundStoreCookieConfigurationPacket,
@@ -487,6 +534,7 @@ namespace ProtocolCraft
 #endif
     >;
 
+#if PROTOCOL_VERSION > 47 /* > 1.8.9 */
     using AllClientboundPlayPackets = std::tuple<
 #if PROTOCOL_VERSION > 761 /* > 1.19.3 */
         ClientboundBundlePacket,
@@ -596,6 +644,9 @@ namespace ProtocolCraft
         ClientboundTagQueryPacket,
 #endif
         ClientboundExplodePacket,
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+        ClientboundAddTransientBlockPacket,
+#endif
         ClientboundForgetLevelChunkPacket,
         ClientboundGameEventPacket,
 #if PROTOCOL_VERSION > 774 /* > 1.21.11 */
@@ -637,7 +688,7 @@ namespace ProtocolCraft
 #if PROTOCOL_VERSION > 404 /* > 1.13.2 */
         ClientboundMerchantOffersPacket,
 #endif
-#if PROTOCOL_VERSION < 477 /* < 1.14 */
+#if PROTOCOL_VERSION > 316 /* > 1.11.2 */ && PROTOCOL_VERSION < 477 /* < 1.14 */
         ClientboundMoveEntityPacket,
 #endif
         ClientboundMoveEntityPacketPos,
@@ -646,7 +697,7 @@ namespace ProtocolCraft
         ClientboundMoveMinecartPacket,
 #endif
         ClientboundMoveEntityPacketRot,
-#if PROTOCOL_VERSION > 404 /* > 1.13.2 */ && PROTOCOL_VERSION < 755 /* < 1.17 */
+#if PROTOCOL_VERSION < 335 /* < 1.12 */ || (PROTOCOL_VERSION > 404 /* > 1.13.2 */ && PROTOCOL_VERSION < 755 /* < 1.17 */)
         ClientboundMoveEntityPacket,
 #endif
         ClientboundMoveVehiclePacket,
@@ -661,7 +712,9 @@ namespace ProtocolCraft
 #if PROTOCOL_VERSION > 763 /* > 1.20.1 */
         ClientboundPongResponsePacket,
 #endif
+#if PROTOCOL_VERSION > 335 /* > 1.12 */
         ClientboundPlaceGhostRecipePacket,
+#endif
         ClientboundPlayerAbilitiesPacket,
 #if PROTOCOL_VERSION > 759 /* > 1.19 */ && PROTOCOL_VERSION < 761 /* < 1.19.3 */
         ClientboundPlayerChatHeaderPacket,
@@ -699,7 +752,7 @@ namespace ProtocolCraft
 #if PROTOCOL_VERSION < 477 /* < 1.14 */
         ClientboundUseBedPacket,
 #endif
-#if PROTOCOL_VERSION < 768 /* < 1.21.2 */
+#if PROTOCOL_VERSION > 316 /* > 1.11.2 */ && PROTOCOL_VERSION < 768 /* < 1.21.2 */
         ClientboundRecipePacket,
 #endif
 #if PROTOCOL_VERSION > 754 /* > 1.16.5 */ && PROTOCOL_VERSION < 756 /* < 1.17.1 */
@@ -717,12 +770,17 @@ namespace ProtocolCraft
 #if PROTOCOL_VERSION < 765 /* < 1.20.3 */
         ClientboundResourcePackPacket,
 #endif
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+        ClientboundPostEffectsPacket,
+#endif
         ClientboundRespawnPacket,
         ClientboundRotateHeadPacket,
 #if PROTOCOL_VERSION > 736 /* > 1.16.1 */
         ClientboundSectionBlocksUpdatePacket,
 #endif
+#if PROTOCOL_VERSION > 316 /* > 1.11.2 */
         ClientboundSelectAdvancementsTabPacket,
+#endif
 #if PROTOCOL_VERSION > 758 /* > 1.18.2 */
         ClientboundServerDataPacket,
 #endif
@@ -794,6 +852,9 @@ namespace ProtocolCraft
 #if PROTOCOL_VERSION > 340 /* > 1.12.2 */ && PROTOCOL_VERSION < 477 /* < 1.14 */
         ClientboundStopSoundPacket,
 #endif
+#if PROTOCOL_VERSION < 110 /* < 1.9.3 */
+        ClientboundUpdateSignPacket,
+#endif
         ClientboundSoundPacket,
 #if PROTOCOL_VERSION > 763 /* > 1.20.1 */
         ClientboundStartConfigurationPacket,
@@ -803,6 +864,9 @@ namespace ProtocolCraft
 #endif
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
         ClientboundStoreCookiePacket,
+#endif
+#if PROTOCOL_VERSION > 776 /* > 26.2 */
+        ClientboundSwingAnimationPacket,
 #endif
 #if PROTOCOL_VERSION > 758 /* > 1.18.2 */
         ClientboundSystemChatPacket,
@@ -823,7 +887,9 @@ namespace ProtocolCraft
 #if PROTOCOL_VERSION > 765 /* > 1.20.4 */
         ClientboundTransferPacket,
 #endif
+#if PROTOCOL_VERSION > 316 /* > 1.11.2 */
         ClientboundUpdateAdvancementsPacket,
+#endif
         ClientboundUpdateAttributesPacket,
 #if PROTOCOL_VERSION > 760 /* > 1.19.2 */ && PROTOCOL_VERSION < 764 /* < 1.20.2 */
         ClientboundUpdateEnabledFeaturesPacket,
@@ -854,11 +920,91 @@ namespace ProtocolCraft
         ClientboundShowDialogPacket
 #endif
     >;
+#endif
 
     using AllClientboundStatusPackets = std::tuple<
         ClientboundStatusResponsePacket,
         ClientboundPongResponseStatusPacket
     >;
+
+#if PROTOCOL_VERSION < 107 /* < 1.9 */
+    using AllClientboundPlayPackets = std::tuple<
+        ClientboundKeepAlivePacket,
+        ClientboundLoginPacket,
+        ClientboundChatPacket,
+        ClientboundSetTimePacket,
+        ClientboundSetEquipmentPacket,
+        ClientboundSetDefaultSpawnPositionPacket,
+        ClientboundSetHealthPacket,
+        ClientboundRespawnPacket,
+        ClientboundPlayerPositionPacket,
+        ClientboundSetCarriedItemPacket,
+        ClientboundUseBedPacket,
+        ClientboundAnimatePacket,
+        ClientboundAddPlayerPacket,
+        ClientboundTakeItemEntityPacket,
+        ClientboundAddEntityPacket,
+        ClientboundAddMobPacket,
+        ClientboundAddPaintingPacket,
+        ClientboundAddExperienceOrbPacket,
+        ClientboundSetEntityMotionPacket,
+        ClientboundRemoveEntitiesPacket,
+        ClientboundMoveEntityPacket,
+        ClientboundMoveEntityPacketPos,
+        ClientboundMoveEntityPacketRot,
+        ClientboundMoveEntityPacketPosRot,
+        ClientboundTeleportEntityPacket,
+        ClientboundRotateHeadPacket,
+        ClientboundEntityEventPacket,
+        ClientboundSetEntityLinkPacket,
+        ClientboundSetEntityDataPacket,
+        ClientboundUpdateMobEffectPacket,
+        ClientboundRemoveMobEffectPacket,
+        ClientboundSetExperiencePacket,
+        ClientboundUpdateAttributesPacket,
+        ClientboundLevelChunkPacket,
+        ClientboundSectionBlocksUpdatePacket,
+        ClientboundBlockUpdatePacket,
+        ClientboundBlockEventPacket,
+        ClientboundBlockDestructionPacket,
+        ClientboundMapChunkBulkPacket,
+        ClientboundExplodePacket,
+        ClientboundLevelEventPacket,
+        ClientboundSoundPacket,
+        ClientboundLevelParticlesPacket,
+        ClientboundGameEventPacket,
+        ClientboundAddGlobalEntityPacket,
+        ClientboundOpenScreenPacket,
+        ClientboundContainerClosePacket,
+        ClientboundContainerSetSlotPacket,
+        ClientboundContainerSetContentPacket,
+        ClientboundContainerSetDataPacket,
+        ClientboundContainerAckPacket,
+        ClientboundUpdateSignPacket,
+        ClientboundMapItemDataPacket,
+        ClientboundBlockEntityDataPacket,
+        ClientboundOpenSignEditorPacket,
+        ClientboundAwardStatsPacket,
+        ClientboundPlayerInfoPacket,
+        ClientboundPlayerAbilitiesPacket,
+        ClientboundCommandSuggestionsPacket,
+        ClientboundSetObjectivePacket,
+        ClientboundSetScorePacket,
+        ClientboundSetDisplayObjectivePacket,
+        ClientboundSetPlayerTeamPacket,
+        ClientboundCustomPayloadPacket,
+        ClientboundDisconnectPacket,
+        ClientboundChangeDifficultyPacket,
+        ClientboundPlayerCombatPacket,
+        ClientboundSetCameraPacket,
+        ClientboundSetBorderPacket,
+        ClientboundSetTitlesPacket,
+        ClientboundPlayCompressionPacket,
+        ClientboundTabListPacket,
+        ClientboundResourcePackPacket,
+        ClientboundSetEntityNBTPacket
+    >;
+#endif
 
     using AllClientboundPackets = Internal::tuple_cat_t<
 #if PROTOCOL_VERSION > 763 /* > 1.20.1 */

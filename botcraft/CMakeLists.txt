@@ -41,6 +41,7 @@ set(botcraft_PUBLIC_HDR
     include/botcraft/Game/Entities/entities/animal/armadillo/ArmadilloEntity.hpp
     include/botcraft/Game/Entities/entities/decoration/ArmorStandEntity.hpp
     include/botcraft/Game/Entities/entities/decoration/BlockAttachedEntity.hpp
+    include/botcraft/Game/Entities/entities/decoration/CushionEntity.hpp
     include/botcraft/Game/Entities/entities/projectile/arrow/ArrowEntity.hpp
     include/botcraft/Game/Entities/entities/animal/axolotl/AxolotlEntity.hpp
     include/botcraft/Game/Entities/entities/ambient/BatEntity.hpp
@@ -305,6 +306,7 @@ set(botcraft_SRC
     src/Game/Entities/entities/animal/armadillo/ArmadilloEntity.cpp
     src/Game/Entities/entities/decoration/ArmorStandEntity.cpp
     src/Game/Entities/entities/decoration/BlockAttachedEntity.cpp
+    src/Game/Entities/entities/decoration/CushionEntity.cpp
     src/Game/Entities/entities/projectile/arrow/ArrowEntity.cpp
     src/Game/Entities/entities/animal/axolotl/AxolotlEntity.cpp
     src/Game/Entities/entities/ambient/BatEntity.cpp
@@ -549,7 +551,6 @@ if(BOTCRAFT_USE_OPENGL_GUI)
     )
 endif(BOTCRAFT_USE_OPENGL_GUI)
 
-
 # To have a nice files structure in Visual Studio
 if(MSVC)
     foreach(source IN LISTS botcraft_PUBLIC_HDR)
@@ -591,6 +592,22 @@ if (BOTCRAFT_USE_PRECOMPILED_HEADERS AND NOT CMAKE_CXX_COMPILER_ID STREQUAL "GNU
         include/botcraft/Game/Entities/entities/Entity.hpp
         ${protocolCraft_SOURCE_DIR}/include/protocolCraft/AllPackets.hpp
     )
+endif()
+
+if (BOTCRAFT_USE_UNITY_BUILD)
+    set_target_properties(botcraft PROPERTIES UNITY_BUILD ON)
+
+    # Non-entity sources: each stays its own TU
+    foreach(src ${botcraft_SRC})
+        if(NOT src MATCHES "src/Game/Entities/")
+            set_source_files_properties(${src} PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+        endif()
+    endforeach()
+
+    # Entity.cpp is excluded
+    set_source_files_properties(src/Game/Entities/entities/Entity.cpp PROPERTIES SKIP_UNITY_BUILD_INCLUSION ON)
+
+    set_target_properties(botcraft PROPERTIES UNITY_BUILD_BATCH_SIZE 32)
 endif()
 
 if(MSVC)

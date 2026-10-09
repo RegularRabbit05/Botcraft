@@ -18,7 +18,10 @@ namespace ProtocolCraft
 
         SERIALIZED_FIELD(X, int);
         SERIALIZED_FIELD(Z, int);
-#if PROTOCOL_VERSION < 477 /* < 1.14 */
+#if PROTOCOL_VERSION < 107 /* < 1.9 */
+        SERIALIZED_FIELD(FullChunk, bool);
+        SERIALIZED_FIELD(AvailableSections, unsigned short);
+#elif PROTOCOL_VERSION < 477 /* < 1.14 */
         SERIALIZED_FIELD(FullChunk, bool);
         SERIALIZED_FIELD(AvailableSections, VarInt);
 #elif PROTOCOL_VERSION < 573 /* < 1.15 */
@@ -47,7 +50,9 @@ namespace ProtocolCraft
         SERIALIZED_FIELD(Biomes, std::vector<VarInt>);
 #endif
         SERIALIZED_FIELD(Buffer, std::vector<unsigned char>);
+#if PROTOCOL_VERSION > 109 /* > 1.9.2 */
         SERIALIZED_FIELD(BlockEntitiesTags, std::vector<NBT::UnnamedValue>);
+#endif
 
         DECLARE_READ_WRITE_SERIALIZE;
     };

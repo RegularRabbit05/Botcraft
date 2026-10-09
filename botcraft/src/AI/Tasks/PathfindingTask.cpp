@@ -125,6 +125,16 @@ namespace Botcraft
         std::unordered_map<std::pair<Position, float>, std::pair<Position, float>, PosFloatPairHash> came_from;
         std::unordered_map<std::pair<Position, float>, float, PosFloatPairHash> cost;
 
+        auto add_node_if_better = [&](const std::pair<Position, float>& new_pos, float new_cost, const PathNode& from) {
+            auto it = cost.find(new_pos);
+            if (it == cost.end() || new_cost < it->second)
+            {
+                cost[new_pos] = new_cost;
+                nodes_to_explore.emplace(PathNode(new_pos, new_cost + PathNode::Heuristic(new_pos.first, end)));
+                came_from[new_pos] = from.pos;
+            }
+        };
+
         const Blockstate* block = world->GetBlock(start);
         nodes_to_explore.emplace(PathNode({ start, PathfindingBlockstate(block, start, take_damage).GetHeight() }, 0.0f));
         came_from[nodes_to_explore.top().pos] = nodes_to_explore.top().pos;
@@ -146,6 +156,15 @@ namespace Botcraft
             count_visit++;
             PathNode current_node = nodes_to_explore.top();
             nodes_to_explore.pop();
+
+            // If this node is already present with a better score
+            {
+                const float h = PathNode::Heuristic(current_node.pos.first, end);
+                if (cost[current_node.pos] + h < current_node.score)
+                {
+                    continue;
+                }
+            }
 
             end_reached |= current_node.pos.first == end;
             suitable_location_found |=
@@ -227,18 +246,7 @@ namespace Botcraft
                     current_node.pos.first + Position(0, 1, 0),
                     current_node.pos.first.y + 1.0f
                 };
-                auto it = cost.find(new_pos);
-                // If we don't already know this node with a better path, add it
-                if (it == cost.end() ||
-                    new_cost < it->second)
-                {
-                    cost[new_pos] = new_cost;
-                    nodes_to_explore.emplace(PathNode(
-                        new_pos,
-                        new_cost + PathNode::Heuristic(new_pos.first, end))
-                    );
-                    came_from[new_pos] = current_node.pos;
-                }
+                add_node_if_better(new_pos, new_cost, current_node);
             }
 
             // -
@@ -260,18 +268,7 @@ namespace Botcraft
                     current_node.pos.first + Position(0, 1, 0),
                     current_node.pos.first.y + 1.0f
                 };
-                auto it = cost.find(new_pos);
-                // If we don't already know this node with a better path, add it
-                if (it == cost.end() ||
-                    new_cost < it->second)
-                {
-                    cost[new_pos] = new_cost;
-                    nodes_to_explore.emplace(PathNode(
-                        new_pos,
-                        new_cost + PathNode::Heuristic(new_pos.first, end))
-                    );
-                    came_from[new_pos] = current_node.pos;
-                }
+                add_node_if_better(new_pos, new_cost, current_node);
             }
 
             // ?
@@ -289,15 +286,7 @@ namespace Botcraft
                     current_node.pos.first + Position(0, -1, 0),
                     current_node.pos.first.y - 1.0f
                 };
-                auto it = cost.find(new_pos);
-                // If we don't already know this node with a better path, add it
-                if (it == cost.end() ||
-                    new_cost < it->second)
-                {
-                    cost[new_pos] = new_cost;
-                    nodes_to_explore.emplace(PathNode(new_pos, new_cost + PathNode::Heuristic(new_pos.first, end)));
-                    came_from[new_pos] = current_node.pos;
-                }
+                add_node_if_better(new_pos, new_cost, current_node);
             }
 
             // ?
@@ -319,18 +308,7 @@ namespace Botcraft
                     current_node.pos.first + Position(0, -3 + 1 * above_block, 0),
                     above_block ? std::max(current_node.pos.first.y - 2.0f, vertical_surroundings[5].GetHeight()) : vertical_surroundings[5].GetHeight()
                 };
-                auto it = cost.find(new_pos);
-                // If we don't already know this node with a better path, add it
-                if (it == cost.end() ||
-                    new_cost < it->second)
-                {
-                    cost[new_pos] = new_cost;
-                    nodes_to_explore.emplace(PathNode(
-                        new_pos,
-                        new_cost + PathNode::Heuristic(new_pos.first, end))
-                    );
-                    came_from[new_pos] = current_node.pos;
-                }
+                add_node_if_better(new_pos, new_cost, current_node);
             }
 
 
@@ -354,18 +332,7 @@ namespace Botcraft
                     current_node.pos.first + Position(0, -3 + 1 * above_block, 0),
                     above_block ? std::max(current_node.pos.first.y - 2.0f, vertical_surroundings[5].GetHeight()) : vertical_surroundings[5].GetHeight()
                 };
-                auto it = cost.find(new_pos);
-                // If we don't already know this node with a better path, add it
-                if (it == cost.end() ||
-                    new_cost < it->second)
-                {
-                    cost[new_pos] = new_cost;
-                    nodes_to_explore.emplace(PathNode(
-                        new_pos,
-                        new_cost + PathNode::Heuristic(new_pos.first, end))
-                    );
-                    came_from[new_pos] = current_node.pos;
-                }
+                add_node_if_better(new_pos, new_cost, current_node);
             }
 
 
@@ -388,7 +355,7 @@ namespace Botcraft
                     pos = current_node.pos.first + Position(0, y, 0);
                     block = world->GetBlock(pos);
 
-                    if (block != nullptr && block->IsSolid() && !block->IsClimbable())
+                    if (block != nullptr && ((block->IsSolid() && !block->IsClimbable()) || (take_damage && block->IsHazardous())))
                     {
                         break;
                     }
@@ -401,18 +368,7 @@ namespace Botcraft
                             current_node.pos.first + Position(0, y + 1, 0),
                             current_node.pos.first.y + y + 1.0f
                         };
-                        auto it = cost.find(new_pos);
-                        // If we don't already know this node with a better path, add it
-                        if (it == cost.end() ||
-                            new_cost < it->second)
-                        {
-                            cost[new_pos] = new_cost;
-                            nodes_to_explore.emplace(PathNode(
-                                new_pos,
-                                new_cost + PathNode::Heuristic(new_pos.first, end))
-                            );
-                            came_from[new_pos] = current_node.pos;
-                        }
+                        add_node_if_better(new_pos, new_cost, current_node);
 
                         break;
                     }
@@ -519,21 +475,10 @@ namespace Botcraft
                     const bool above_block = horizontal_surroundings[2].IsClimbable() || horizontal_surroundings[3].IsClimbable() || horizontal_surroundings[3].GetHeight() + 1e-3f > current_node.pos.first.y;
                     const float new_cost = cost[current_node.pos] + 2.0f - 1.0f * above_block;
                     const std::pair<Position, float> new_pos = {
-                        next_location + Position(0, 1 - 1 * above_block, 0),
+                        next_location + Position(0, -1 + 1 * above_block, 0),
                         above_block ? std::max(static_cast<float>(next_location.y), horizontal_surroundings[3].GetHeight()) : std::max(horizontal_surroundings[3].GetHeight(), horizontal_surroundings[4].GetHeight())
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
 
@@ -560,18 +505,7 @@ namespace Botcraft
                         next_location + Position(0, 1, 0),
                         std::max(horizontal_surroundings[1].GetHeight(), horizontal_surroundings[2].GetHeight()) // for the carpet on wall trick
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // -  -  ?
@@ -600,18 +534,7 @@ namespace Botcraft
                         next_location + Position(0, 1 * above_block, 0),
                         above_block ? std::max(current_node.pos.first.y + 1.0f, horizontal_surroundings[2].GetHeight()) : std::max(horizontal_surroundings[2].GetHeight(), horizontal_surroundings[3].GetHeight())
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // ?  ?  ?
@@ -634,18 +557,7 @@ namespace Botcraft
                         next_location + Position(0, -2 + 1 * above_block, 0),
                         above_block ? std::max(current_node.pos.first.y - 1.0f, horizontal_surroundings[4].GetHeight()) : std::max(horizontal_surroundings[4].GetHeight(), horizontal_surroundings[5].GetHeight())
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // ?  ?  ?
@@ -669,18 +581,7 @@ namespace Botcraft
                         next_location + Position(0, -3 + 1 * above_block, 0),
                         above_block ? std::max(current_node.pos.first.y - 2.0f, horizontal_surroundings[5].GetHeight()) : horizontal_surroundings[5].GetHeight() // no carpet on wall check here as we don't have the block below
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // ?  ?  ?
@@ -704,7 +605,7 @@ namespace Botcraft
                         pos = next_location + Position(0, y, 0);
                         block = world->GetBlock(pos);
 
-                        if (block != nullptr && block->IsSolid() && !block->IsClimbable())
+                        if (block != nullptr && ((block->IsSolid() && !block->IsClimbable()) || (take_damage && block->IsHazardous())))
                         {
                             break;
                         }
@@ -717,18 +618,7 @@ namespace Botcraft
                                 next_location + Position(0, y + 1, 0),
                                 next_location.y + y + 1.0f
                             };
-                            auto it = cost.find(new_pos);
-                            // If we don't already know this node with a better path, add it
-                            if (it == cost.end() ||
-                                new_cost < it->second)
-                            {
-                                cost[new_pos] = new_cost;
-                                nodes_to_explore.emplace(PathNode(
-                                    new_pos,
-                                    new_cost + PathNode::Heuristic(new_pos.first, end))
-                                );
-                                came_from[new_pos] = current_node.pos;
-                            }
+                            add_node_if_better(new_pos, new_cost, current_node);
 
                             break;
                         }
@@ -741,16 +631,20 @@ namespace Botcraft
                     || !can_jump
                     || vertical_surroundings[0].IsSolid()       // Block above
                     || vertical_surroundings[0].IsHazardous()   // Block above
-                    || !vertical_surroundings[1].IsEmpty()      // Block above
+                    || vertical_surroundings[1].IsSolid()       // Block above
+                    || vertical_surroundings[1].IsHazardous()   // Block above
                     || vertical_surroundings[3].IsFluid()       // "Walking" on fluid
-                    || vertical_surroundings[3].IsEmpty()       // Feet on nothing (inside climbable)
+                    || (!vertical_surroundings[2].IsSolid() &&  // Feet on nothing (inside climbable)
+                        vertical_surroundings[3].IsEmpty())
                     || horizontal_surroundings[0].IsSolid()     // Block above next column
                     || horizontal_surroundings[0].IsHazardous() // Hazard above next column
-                    || !horizontal_surroundings[1].IsEmpty()    // Non empty block in next column, can't jump through it
-                    || !horizontal_surroundings[2].IsEmpty()    // Non empty block in next column, can't jump through it
+                    || horizontal_surroundings[1].IsSolid()     // Non empty block in next column, can't jump through it
+                    || horizontal_surroundings[1].IsHazardous() // Non empty block in next column, can't jump through it
+                    || horizontal_surroundings[2].IsSolid()     // Non empty block in next column, can't jump through it
+                    || horizontal_surroundings[2].IsHazardous() // Non empty block in next column, can't jump through it
                     || horizontal_surroundings[6].IsSolid()     // Block above nextnext column
                     || horizontal_surroundings[6].IsHazardous() // Hazard above nextnext column
-                    )
+                )
                 {
                     continue;
                 }
@@ -774,18 +668,7 @@ namespace Botcraft
                         next_next_location + Position(0, 1, 0),
                         std::max(horizontal_surroundings[7].GetHeight(), horizontal_surroundings[8].GetHeight()), // for the carpet on wall trick
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // -  -  -
@@ -808,18 +691,7 @@ namespace Botcraft
                         next_next_location + Position(0, above_block * 1, 0),
                         above_block ? std::max(current_node.pos.first.y + 1.0f, horizontal_surroundings[8].GetHeight()) : std::max(horizontal_surroundings[8].GetHeight(), horizontal_surroundings[9].GetHeight())
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // -  -  -
@@ -840,18 +712,7 @@ namespace Botcraft
                         next_next_location + Position(0,  -1 + 1 * above_block, 0),
                         above_block ? std::max(static_cast<float>(current_node.pos.first.y), horizontal_surroundings[9].GetHeight()) : std::max(horizontal_surroundings[9].GetHeight(), horizontal_surroundings[10].GetHeight())
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // -  -  -
@@ -873,18 +734,7 @@ namespace Botcraft
                         next_next_location + Position(0, -2 + 1 * above_block, 0),
                         above_block ? std::max(current_node.pos.first.y - 1.0f, horizontal_surroundings[10].GetHeight()) : std::max(horizontal_surroundings[10].GetHeight(), horizontal_surroundings[11].GetHeight())
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
 
                 // -  -  -
@@ -905,20 +755,9 @@ namespace Botcraft
                     const float new_cost = cost[current_node.pos] + 6.5f - 1.0f * above_block;
                     const std::pair<Position, float> new_pos = {
                         next_next_location + Position(0, -3 + 1 * above_block, 0),
-                        above_block ? std::max(current_node.pos.first.y - 2.0f, horizontal_surroundings[11].GetHeight()) : horizontal_surroundings[1].GetHeight()
+                        above_block ? std::max(current_node.pos.first.y - 2.0f, horizontal_surroundings[11].GetHeight()) : horizontal_surroundings[11].GetHeight()
                     };
-                    auto it = cost.find(new_pos);
-                    // If we don't already know this node with a better path, add it
-                    if (it == cost.end() ||
-                        new_cost < it->second)
-                    {
-                        cost[new_pos] = new_cost;
-                        nodes_to_explore.emplace(PathNode(
-                            new_pos,
-                            new_cost + PathNode::Heuristic(new_pos.first, end))
-                        );
-                        came_from[new_pos] = current_node.pos;
-                    }
+                    add_node_if_better(new_pos, new_cost, current_node);
                 }
             } // neighbour loop
         }
@@ -961,7 +800,7 @@ namespace Botcraft
                 const int d = d_xz + std::abs(diff.y);
                 const Position diff_start = it->first.first - start;
                 const int d_start = std::abs(diff_start.x) + std::abs(diff_start.y) + std::abs(diff_start.z);
-                if (d < best_dist || (d == best_dist && d_start < best_dist_start))
+                if (d >= min_end_dist && d_xz >= min_end_dist_xz && (d < best_dist || d == best_dist && d_start < best_dist_start))
                 {
                     best_dist = d;
                     best_dist_start = d_start;
@@ -1153,7 +992,7 @@ namespace Botcraft
                 }
 
                 return false;
-            }, client, 20.0 * ms_per_tick + (1 + std::abs(motion_vector.y))))
+            }, client, 20.0 * ms_per_tick * (1 + std::abs(motion_vector.y))))
         {
             return false;
         }

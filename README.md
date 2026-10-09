@@ -41,7 +41,7 @@ Main features are listed below. To see the evolution of the project, check the [
 
 - Connection to minecraft server (both offline "cracked" mode and online connection with ~~Mojang or~~ Microsoft account)
 - DNS server name resolution with and without SRV record
-- All official releases from 1.12.2 to 26.2 supported
+- All official releases from 1.12.2 to 26.3 supported
 - Compression
 - Signed chat system for 1.19+ versions
 - Vanilla physics and collisions ([wiki page](https://github.com/adepierre/Botcraft/wiki/Physics) for details)
@@ -110,7 +110,7 @@ Optional dependencies (rendering):
 Optional dependencies (testing)
 - [catch2](https://github.com/catchorg/Catch2)† for tests management
 - [subprocess.h](https://github.com/sheredom/subprocess.h)\* to launch the vanilla test server
-- [Java](https://www.java.com/) 8 for Minecraft < 1.17, 17 for Minecraft < 1.20.5, 21 for Minecraft 1.20.5+ to run the vanilla test server
+- [Java](https://www.java.com/) 8 for Minecraft < 1.17, 17 for Minecraft < 1.20.5, 21 for Minecraft < 26.1, 25 for Minecraft 26.1+ to run the vanilla test server
 
 Optional dependencies (doc generation)
 - [doxygen](https://www.doxygen.nl/) for documentation generation
@@ -149,6 +149,7 @@ There are several cmake options you can modify:
 - BOTCRAFT_USE_IMGUI [ON/OFF] If ON, additional information will be displayed on the GUI (need BOTCRAFT_USE_OPENGL_GUI to be ON)
 - BOTCRAFT_WINDOWS_BETTER_SLEEP [ON/OFF] If ON, thread sleep durations will be more accurate (only for Windows 10/11, no effect on other OS)
 - BOTCRAFT_USE_PRECOMPILED_HEADERS [ON/OFF] If ON, will use precompiled headers to speed up compilation process (ignored on GCC as precompiled headers slow down the build process)
+- BOTCRAFT_USE_UNITY_BUILD [ON/OFF] If ON, will use cmake unity build to merge entity files in a single TU to speed up compilation
 - BOTCRAFT_BUILD_DOC [ON/OFF] If ON, a target to generate the documentation will be added
 
 ## Examples
